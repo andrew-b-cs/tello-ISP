@@ -26,17 +26,16 @@ me.speed = 0
 
 
 
-me.streamoff()
 me.streamon()
 
 while True:
     print(me.get_battery())
     frame_read = me.get_frame_read()
-
+    height, width, _ = frame_read.frame.shape
     myFrame = frame_read.frame
-    frame = cv2.resize(myFrame, (320, 240))
+    frame = cv2.resize(myFrame, (width, height))
 
-    with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
+    with mp_pose.Pose(min_detection_confidence=0.3, min_tracking_confidence=0.3) as pose:
     
         
 
@@ -61,6 +60,7 @@ while True:
     centerX = 0
     centerY = 0
     visibilityLeft = 0
+
     try:
         landmarks = results.pose_landmarks.landmark
         centerX = (landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x + landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x)/2
@@ -71,15 +71,16 @@ while True:
     
     print(visibilityLeft)
 
-    # if initialize:
-    #     me.takeoff()
-    #     initialize = False
+    if initialize:
+        me.takeoff()
+        initialize = False
+
+    me.rotate_clockwise(90)
 
     # me.yaw_velocity = 99
 
-    if me.send_rc_control:
-        me.send_rc_control(me.left_right_velocity, me.forward_backward_velocity, me.up_down_velocity, 99)
-
+    # me.send_rc_control(me.left_right_velocity, me.forward_backward_velocity, me.up_down_velocity, 99)
+    
     # if me.get_battery() < 40:
     #     me.land()
 
